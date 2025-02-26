@@ -13,9 +13,9 @@ top:
   - 801859  # don't keep W jets
 
 W:
-  weights_file: "/eos/home-t/tmlinare/Lund/Lund_tagging/ljptagger/flat_weights.root"
-  pt_hist_file_bkg: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger/qcd.root"
-  pt_hist_file_signal: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger/top.root"
+  weights_file: "/home/tmlinare/Lund/Lund_tagging/lundtoptagger_data/flat_weights.root"
+  pt_hist_file_bkg: "/home/tmlinare/Lund/Lund_tagging/lundtoptagger/qcd.root"
+  pt_hist_file_signal: "/home/tmlinare/Lund/Lund_tagging/lundtoptagger/top.root"
   signal_jet_truth_label: 2
   skip_dsids:
   - 364700  # don't lose time with jets that don't pass pt cut

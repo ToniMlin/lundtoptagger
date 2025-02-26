@@ -1,7 +1,10 @@
 data:
   # path_to_trainfiles: "/data/ravinascos/LundNet/2024_graphs/graphs_NewDataset_LundNet_R22_No_ln_kT_Cut_LRJ_NewData_Primary"
-  path_to_trainfiles: "/data/ravinascos/LundNet/2024_graphs/graphs_NewDataset_LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"  # can also be a list of paths
-  path_to_save: "/home/ravinascos/LundNet/Jad_git/lundtoptagger/Models/"
+  # path_to_trainfiles: "/data/ravinascos/LundNet/2024_graphs/graphs_NewDataset_LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"  # can also be a list of paths
+  path_to_trainfiles:
+  - "/home/tmlinare/Lund/Lund_tagging/lundtoptagger_data/graphs/graphs_QCD_2percent_ln_kT_cut_{ln_kT_cut}"
+  - "/home/tmlinare/Lund/Lund_tagging/lundtoptagger_data/graphs/graphs_Wflatmass_1-2_ln_kT_cut_{ln_kT_cut}"
+  path_to_save: "/home/tmlinare/Lund/Lund_tagging/lundtoptagger_data/models/run7_Wflatmass_1-2_QCD_2percent_ln_kT_cut_{ln_kT_cut}/"
   # model_name: "LundNet_R22_ExtraNode_No_ln_kT_Cut_LRJ_NewData_Primary"
   model_name: "LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"
   ln_kT_cut: null # null, -0.5, 0.0, 0.5, 1.0, 2.0, 2.8
@@ -21,6 +24,6 @@ retrain:
   path_to_ckpt: "/sps/atlas/k/khandoga/TrainGNN/Models/LundNet_ufob_e012_0.12481.pt"
 
 # choose gpu to run on
-gpu: null # can be null or integer
+gpu: 1 # can be null or integer
 # if null, code will check if CUDA is available and use torch.device("cuda") if it is, otherwise torch.device("cpu")
 # Usually gpu 4 worked best, it had the most memory available (on UChicago?)
