@@ -1,10 +1,10 @@
 data:
-  # path_to_trainfiles: "/data/ravinascos/LundNet/2024_graphs/graphs_NewDataset_LundNet_R22_No_ln_kT_Cut_LRJ_NewData_Primary"
-  path_to_trainfiles: "/data/ravinascos/LundNet/2024_graphs/graphs_NewDataset_LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"  # can also be a list of paths
-  path_to_save: "/home/ravinascos/LundNet/Jad_git/lundtoptagger/Models/"
+  # path_to_trainfiles: "/data/ravinascos/LundNet/2024_graphs/graphs_NewDataset_LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"  # can also be a list of paths
+  path_to_trainfiles: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger_tests_checks/combined_dataset_Wnonflat-2files_QCD_2percent"
+  path_to_save: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger_data/models/"
   # model_name: "LundNet_R22_ExtraNode_No_ln_kT_Cut_LRJ_NewData_Primary"
   model_name: "LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"
-  ln_kT_cut: null # null, -0.5, 0.0, 0.5, 1.0, 2.0, 2.8
+  ln_kT_cut: 0 # null, -0.5, 0.0, 0.5, 1.0, 2.0, 2.8
   # if {ln_kT_cut} is present in path_to_trainfiles or model_name, it will be replaced by the value of ln_kT_cut (by None if ln_kT_cut is null)
   # the value from this config file and can be overriden by the command-line argument --ln_kT_cut
 
