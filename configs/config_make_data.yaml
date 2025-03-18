@@ -11,6 +11,8 @@
 # path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-07-0700-7b0a files 51-99/data-ANALYSIS/mc20_13TeV.802017.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT_wideWmass.deriv.DAOD_JETM2.e8482_s3797_r13145_p5548.root'
 # path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-12-1919-bc4c W files 1-50 (not flat mass)/data-ANALYSIS/mc20_13TeV.801859.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT.deriv.DAOD_JETM2.e8482_s3681_r13145_p5548.root'
 path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-03-04-1256-df4b Wrealmass files 51-59/data-ANALYSIS/mc20_13TeV.801859.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT.deriv.DAOD_JETM2.e8482_s3681_r13145_p5548.root'
+# path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-03-17-1521-5f2d Wqq mc20d files 1-2/data-ANALYSIS/mc20_13TeV.700843.Sh_2214_Wqq_ptW_200_ECMS.deriv.DAOD_JETM2.e8536_s3681_r13144_p6481_1-2.root'
+# path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-03-17-1622-10a4 Zqq mc20d files 1-2/data-ANALYSIS/mc20_13TeV.700849.Sh_2214_Zqq_ptZ_200_ECMS.deriv.DAOD_JETM2.e8536_s3681_r13144_p6481_1-2.root'
 n_files: null   # choose a small number of files in case you don't want to do full training; set to null to use all files
 #path_to_save: "/home/ravinascos/LundNet/Jad_git/lundtoptagger/Models/"
 # path_to_save: "/data/ravinascos/LundNet/2024_graphs/"
