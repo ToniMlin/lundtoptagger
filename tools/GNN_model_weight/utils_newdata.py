@@ -5,6 +5,7 @@ import yaml
 import uproot
 import awkward as ak
 import numpy as np
+from tqdm import trange
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
@@ -74,7 +75,7 @@ def GetPtWeight_2(truth_labels, pts, SF):
         else:
             Inv_hist_sig.append(np.sum(flatweights_sig[0]) / (lenght_sig * flatweights_sig[0][i]))
 
-    for i in range(len(truth_labels)):
+    for i in trange(len(truth_labels)):
         pt_bin = int( ((pts[i]-100)/3000)*lenght_sig )
         if pt_bin>=lenght_sig : # ==
             pt_bin = lenght_sig-1
@@ -146,7 +147,7 @@ def create_train_dataset_fulld_new_Ntrk_pt_weight_file(
     extra_node = 0
 
     # loop over jets
-    for i in range(len(z)):  
+    for i in trange(len(z)):  
         '''
         label_np = ak.to_numpy(label[i])
         jet_pts_np = ak.to_numpy(jet_pts[i])

@@ -5,7 +5,7 @@ data:
   # model_name: "LundNet_R22_ExtraNode_No_ln_kT_Cut_LRJ_NewData_Primary"
   model_name: "LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"
   ln_kT_cut: 0 # null, -0.5, 0.0, 0.5, 1.0, 2.0, 2.8
-  # if {ln_kT_cut} is present in path_to_trainfiles or model_name, it will be replaced by the value of ln_kT_cut (by None if ln_kT_cut is null)
+  # if {ln_kT_cut} is present in path_to_trainfiles, path_to_save or model_name, it will be replaced by the value of ln_kT_cut (by None if ln_kT_cut is null)
   # the value from this config file and can be overriden by the command-line argument --ln_kT_cut
 
 architecture:

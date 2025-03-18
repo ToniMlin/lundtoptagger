@@ -25,7 +25,7 @@ def main():
     config_file = args.config
     config = load_yaml(config_file)
 
-    ln_kT_cut = args['ln_kT_cut'] if args['ln_kT_cut'] is not None else config['data']['ln_kT_cut']
+    ln_kT_cut = args.ln_kT_cut if args.ln_kT_cut is not None else config['data']['ln_kT_cut']
     path_to_file = config['data']['path_to_trainfiles']
 
     dataset = []
@@ -110,15 +110,16 @@ def main():
     train_bgrej = []
     val_bgrej = []
 
-    model_name = config['data']['model_name']
-    path_to_save = config['data']['path_to_save']
+    model_name = config['data']['model_name'].format(ln_kT_cut=ln_kT_cut)
+    path_to_save = config['data']['path_to_save'].format(ln_kT_cut=ln_kT_cut)
     train_loss = []
     val_loss = []
     train_acc = []
     val_acc = []
 
     os.makedirs(path_to_save, exist_ok=True)
-    metrics_filename = os.path.join(path_to_save, f"losses_{model_name}{datetime.now().strftime("%d%m-%H%M")}.txt")
+    timestamp = datetime.now().strftime("%d%m-%H%M")
+    metrics_filename = os.path.join(path_to_save, f"losses_{model_name}{timestamp}.txt")
 
     for epoch in range(n_epochs):
         train_loss.append(train_clas(train_loader, model, device, optimizer, optimizer2, optimizer3, epoch))

@@ -28,7 +28,8 @@ def main():
 
     intreename = "AnalysisTree"
 
-    print(f"Processing {len(files)} files")
+    n_files = len(files)
+    print(f"Processing {n_files} files")
     t_start = time.time()
 
     dataset = []
@@ -46,7 +47,7 @@ def main():
 
             truth_labels = ak.flatten(tree["LRJ_truthLabel"].array(library="ak"))
 
-            print("length dataset:", len(dataset), " file number:", file_number)
+            print(f"length dataset: {len(dataset)}, file number: {file_number}/{n_files}")
             parent1 = ak.flatten(tree["jetLundIDParent1"].array(library="ak"))
             parent2 = ak.flatten(tree["jetLundIDParent2"].array(library="ak"))
             jet_ms = ak.flatten(tree["LRJ_mass"].array(library="ak"))
@@ -58,9 +59,11 @@ def main():
             # N_tracks = ak.flatten(tree["LRJ_Ntrk500"].array(library="ak"))
             # N_tracks = ak.flatten(tree["LRJ_Nconst"].array(library="ak"))
 
+            print("Calculating weights:")
             flat_weights = GetPtWeight_2(truth_labels, jet_pts, 5)
             kT_selection = config["kT_cut"]
 
+            print("Creating PyTorch graphs:")
             dataset = create_train_dataset_fulld_new_Ntrk_pt_weight_file(
                 dataset, all_lund_zs, all_lund_kts, all_lund_drs,
                 parent1, parent2, flat_weights, truth_labels,
@@ -80,7 +83,10 @@ def main():
         kT_cut = kT_selection,
         include_pt = "_with_pt" if config["include_pt"] else ""
     )
-    out_dir = config["out_dir"]
+    out_dir = config["out_dir"].format(
+        kT_cut = kT_selection,
+        include_pt = "_with_pt" if config["include_pt"] else ""
+    )
     os.makedirs(out_dir, exist_ok=True)
     output_path_graphs = os.path.join(out_dir, out_file_name)
 

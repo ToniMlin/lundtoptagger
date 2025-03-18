@@ -14,11 +14,11 @@ path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/
 n_files: null   # choose a small number of files in case you don't want to do full training; set to null to use all files
 #path_to_save: "/home/ravinascos/LundNet/Jad_git/lundtoptagger/Models/"
 # path_to_save: "/data/ravinascos/LundNet/2024_graphs/"
-out_dir: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger_data/"
 
-# The output file name can contain some placeholders inside curly brackets. They will be replaced by the corresponding values:
+# The output directory and file name can contain some placeholders inside curly brackets. They will be replaced by the corresponding values:
 # {kT_cut} -> value of kT_cut (None if kT_cut is null)
 # {include_pt} -> "_with_pt" if include_pt is True, "" if include_pt is False
+out_dir: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger_data/graphs/"
 out_file_name: "graphs_Wrealmass_51-59_ln_kT_cut_{kT_cut}{include_pt}"
 #"LundNet_R22_TRAIN_01QCD_05Z_Primary_FIX_ExtraNode_kt_.0"
 # LundNet_R22_TRAIN_01QCD_05Z_Primary_ExtraNode_NormalSignalWeights
