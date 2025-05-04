@@ -25,3 +25,15 @@ W:
   # - 364701  # don't lose time with jets that don't pass pt cut
   # - 364702  # don't lose time with jets that don't pass pt cut
   - 801661  # don't keep top jets
+
+Z:
+  weights_file: "/eos/home-t/tmlinare/Lund/Lund_tagging/ljptagger/flat_weights.root"
+  pt_hist_file_bkg: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger/qcd.root"
+  pt_hist_file_signal: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger/pTs/Z.root"
+  signal_jet_truth_label: 5
+  pt_range: [200, 3200]  # jet pT selection in GeV
+  skip_dsids:
+  # - 364700  # don't lose time with jets that don't pass pt cut
+  # - 364701  # don't lose time with jets that don't pass pt cut
+  # - 364702  # don't lose time with jets that don't pass pt cut
+  - 801661  # don't keep top jets
