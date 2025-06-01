@@ -4,17 +4,32 @@ data:
   path_to_save: "/home/ravinascos/LundNet/Jad_git/lundtoptagger/Models/"
   # model_name: "LundNet_R22_ExtraNode_No_ln_kT_Cut_LRJ_NewData_Primary"
   model_name: "LundNet_R22_ExtraNode_ln_kT_Cut_{ln_kT_cut}_LRJ_NewData_Primary"
+  adv_model_name: "adversarial_MODEL_"
   ln_kT_cut: null # null, -0.5, 0.0, 0.5, 1.0, 2.0, 2.8
   # if {ln_kT_cut} is present in path_to_trainfiles, path_to_save or model_name, it will be replaced by the value of ln_kT_cut (by None if ln_kT_cut is null)
-  # the value from this config file and can be overriden by the command-line argument --ln_kT_cut
+  # the value from this config file and can be overridden by the command-line argument --ln_kT_cut
 
 architecture:
   batch_size: 4500 #2600
   test_size: 0.1
-  n_epochs: 35
-  learning_rate: 0.0004 # 0.0005 for ln_kT_cut=2.8?
-  choose_model: LundNet ## LundNet, GATNet, GINNet, EdgeGinNet, PNANet
+  learning_rate: 0.0004
   save_every_epoch: True
+
+  # classifier
+  n_epochs: 35
+  choose_model: LundNet ## LundNet, GATNet, GINNet, EdgeGinNet, PNANet
+
+  # adversarial
+  num_gaussians: 20
+  n_epochs_adv: 20
+
+  # combined
+  do_combined_training: False  # can be overridden by command line argument
+  lambda_parameter: 25
+  loss_parameter: 1
+  loss_weights: [1,1]
+  n_epochs_common: 200
+
 
 retrain:
   flag: False

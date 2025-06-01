@@ -1,24 +1,24 @@
 #path_to_trainfiles: "/data/ravinascos/Lund_Plane_2024_graphs/TRAIN_DUMMY_01QCD_05Z/*.root" #TRAIN_DUMMY_fewEvents # TRAIN_DUMMY_01QCD_05Z
-# path_to_trainfiles: '/data/ravinascos/Lund_Plane_2024_graphs/TRAIN_DUMMY_02QCD_1Z/*.root'
-# path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2024-12-17-1734-0b3d flat mass W local (first success)/data-ANALYSIS/*.root'
-# path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-07-0643-4c75 files 1-2/data-ANALYSIS/mc20_13TeV.802017.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT_wideWmass.deriv.DAOD_JETM2.e8482_s3797_r13145_p5548_files_1-2.root'
-# path_to_trainfiles: '/eos/user/r/ravinasc/R_22_Samples/05_QCD/*.root'
-# path_to_trainfiles: '/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger_data/QCD_sample/QCD_2percent4.root'
-# path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-17-1314-99e4 W files 1-2 (not flat mass)/data-ANALYSIS/mc20_13TeV.801859.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT.deriv.DAOD_JETM2.e8482_s3681_r13145_p5548_files_1-2.root'
-# path_to_trainfiles: '/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-17-1507-b394 W files 3-4 (not flat mass)/data-ANALYSIS/mc20_13TeV.801859.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT.deriv.DAOD_JETM2.e8482_s3681_r13145_p5548_files_3-4.root'
-path_to_trainfiles: '/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger_data/QCD_sample/QCD_2percent4_test.root'
-n_files: null   # choose a small number of files in case you don't want to do full training; set to null to use all files
-#path_to_save: "/home/ravinascos/LundNet/Jad_git/lundtoptagger/Models/"
-# path_to_save: "/data/ravinascos/LundNet/2024_graphs/"
+path_to_trainfiles: '/data/ravinascos/Lund_Plane_2024_graphs/TRAIN_DUMMY_02QCD_1Z/*.root'
+# path_to_trainfiles: '/eos/user/r/ravinasc/R_22_Samples/'
+n_files: null   # choose a small number of files in case you don't want to process all files; otherwise set to null
 
-# The output directory and file name can contain some placeholders inside curly brackets. They will be replaced by the corresponding values:
+# The output directory and file name can contain some placeholders inside curly brackets.
+# They will be replaced by the corresponding values:
+# {id} -> value of id specified below
 # {kT_cut} -> value of kT_cut (None if kT_cut is null)
 # {include_pt} -> "_with_pt" if include_pt is True, "" if include_pt is False
-out_dir: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger_data/graphs/"
-out_file_name: "graphs_NewDataset_TEST_ln_kT_cut_{kT_cut}{include_pt}"
-#"LundNet_R22_TRAIN_01QCD_05Z_Primary_FIX_ExtraNode_kt_.0"
-# LundNet_R22_TRAIN_01QCD_05Z_Primary_ExtraNode_NormalSignalWeights
+# {test_frac} -> f"_{test_frac*100}percent" if test_frac is not null, "" if test_frac is null
+# out_dir: "/home/ravinascos/LundNet/Jad_git/lundtoptagger/Models/"
+out_dir: "/data/ravinascos/LundNet/2024_graphs/"
+out_file_name_graphs: "graphs_{id}{test_frac}_ln_kT_cut_{kT_cut}{include_pt}"
+out_file_name_root: "data_{id}{test_frac}_ln_kT_cut_{kT_cut}.root"
+# the ROOT file will store mass, pT, mcEventWeight, dsids, truth labels and the flat-pT weights of the jets passing the selection
 
-# selection and output variables to include
-kT_cut: 0         # actually a cut in ln(kT), set to null to not apply any cut
-include_pt: False # choose whether to include jet pT as an attribute of the graphs - this is not needed for training but can be useful for evaluation
+id: "QCD_mass_40-300"    # your own identifier for the dataset, used in the output file names
+# e.g. you might use "QCD_mass_40-300" when processing QCD samples for W jets
+test_frac: null   # fraction of jets to save into a separate file for testing, can be null to not save a test file
+
+# selection and output variables to include as graph attributes
+kT_cut: null           # actually a cut in ln(kT), set to null to not apply any cut
+include_pt: True       # choose whether to include jet pT as an attribute of the graphs - this is needed for training with the adversarial network and can be useful for evaluation

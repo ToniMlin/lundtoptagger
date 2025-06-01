@@ -6,7 +6,6 @@ import torch
 import awkward as ak
 import time
 import uproot
-import uproot3
 import numpy as np
 from datetime import timedelta
 from torch_geometric.data import DataLoader
@@ -53,15 +52,13 @@ if __name__ == "__main__":
     #print ("files:",files)
     intreename = "AnalysisTree"
 
-    nentries_total = 0
+    files_and_trees = {file_name: intreename for file_name in files}
+    nentries_total = sum(entry[-1] for entry in uproot.num_entries(files_and_trees))
     nentries_done = 0
 
     learning_rate = 0.0005
     batch_size = 2048
     scale_factor = 1
-    
-    for file in files:
-        nentries_total += uproot3.numentries(file, intreename)
 
     print("Evaluating on {} files with {} entries in total.".format(len(files), nentries_total))
     
@@ -87,11 +84,16 @@ if __name__ == "__main__":
         
         with uproot.open(file) as infile:
             tree = infile[intreename]
+            num_entries = tree.num_entries
 
             count_files += 1
-            dsids_test = tree["dsid"].array(library="np")
-            if dsids_test[0] in  config_signal[signal]["skip_dsids"]: # don't lose time with jets that don't pass pt cut or wrong signal sample
+            dsids = tree["dsid"].array(library="np")
+            dsid_test = dsids[0]                                 # check the first DSID, they should all be the same
+            if dsid_test in config_signal[signal]["skip_dsids"]: # don't lose time with jets that don't pass pt cut or wrong signal sample
                continue
+
+            truth_labels_unflattened = tree["LRJ_truthLabel"].array(library="ak")
+            truth_labels = ak.flatten(truth_labels_unflattened)
 
             jet_pts_truth = ak.to_numpy(ak.flatten(tree["LRJ_pt"].array(library="ak")) )
             #ptweights = ak.to_numpy(ak.flatten(tree["LRJ_pt"].array(library="ak")) )
@@ -102,7 +104,7 @@ if __name__ == "__main__":
             #labels = labels == 1
             #labels = 1*labels
             
-            dsids = dsids_test[0]*np.ones_like(ak.to_numpy(ak.flatten(tree["LRJ_pt"].array(library="ak")) ))
+            dsids = dsid_test*np.ones_like(ak.to_numpy(ak.flatten(tree["LRJ_pt"].array(library="ak")) ))
             LRJ_pt_ref = tree["LRJ_pt"].array(library="np") 
             mcweights = tree["mcEventWeight"].array(library="np")  #mcEventWeight
             mcweights = flatten_small_branch(LRJ_pt_ref, mcweights)
@@ -150,8 +152,8 @@ if __name__ == "__main__":
             ##dataset = create_train_dataset_fulld_new_Ntrk_pt_weight_file_test( dataset , all_lund_zs, all_lund_kts, all_lund_drs, parent1, parent2, labels ,N_tracks,jet_pts, jet_ms  )
 
             #flat_weights = GetPtWeight_2( labels, jet_pts, filename=config['data']['weights_file'], SF=config['data']['scale_factor'])
-            
-            flat_weights = GetPtWeight_2( dsids, jet_pts, 5)
+
+            flat_weights = GetPtWeight(truth_labels, dsid_test, jet_pts, 5, Pythia_or_All=True)
             #dataset = create_train_dataset_fulld_new_Ntrk_pt_weight_file( dataset , all_lund_zs, all_lund_kts, all_lund_drs, parent1, parent2, flat_weights, labels ,N_tracks,jet_pts, jet_ms  )
             
 
@@ -214,7 +216,7 @@ if __name__ == "__main__":
             )#, count_files)
 
             #Good_jets = labels
-            labels = labels == 1
+            labels = labels==config_signal[signal]["signal_jet_truth_label"] #1
             labels = 1*labels
             
             if count_files==0:
@@ -271,26 +273,27 @@ if __name__ == "__main__":
         # tagger_scores = np.pad(tagger_scores, (0, len(dsids) - len(tagger_scores)), 'constant', constant_values=(-1))
         
         #print ("dsids",len(dsids),"mcweights",len(mcweights),"NBHadrons",len(NBHadrons),"tagger_scores",len(tagger_scores),"jet_pts",len(jet_pts),"jet_etas",len(jet_phis),"jet_phis",len(jet_phis),"jet_ms",len(jet_ms),"ptweights",len(ptweights),"Good_jets",len(Good_jets), "mcweights_out",len(mcweights_out), "all_lund_zs",len(all_lund_zs) )
-        
-        with uproot3.recreate("{}_score_{}.root".format(outfile_path, output_name)) as f:
-            treename = "FlatSubstructureJetTree"
-            #Declare branch data types
-            f[treename] = uproot3.newtree({"EventInfo_mcChannelNumber": "int32",
-                                          "EventInfo_mcEventWeight": "float32",
-                                          #"EventInfo_NBHadrons": "int32",   # I doubt saving the parents is necessary here
-                                          "fjet_nnscore": "float32",        # which is why I didn't include them
-                                          "fjet_pt": "float32",
-                                          "fjet_eta": "float32",
-                                          "fjet_phi": "float32",
-                                          "fjet_m": "float32",
-                                          "fjet_weight_pt": "float32", 
-                                          "labels" : "float32",
-                                          "Good_jets" : "float32",
-                                           # "ungroomedtruthjet_m" : "float32",
-                                           # "ungroomedtruthjet_split12" : "float32",
-                                          })
 
-       
+        with uproot.recreate("{}_score_{}.root".format(outfile_path, output_name)) as f:
+            treename = "FlatSubstructureJetTree"
+            # Declare branch data types
+            f.mktree(treename,
+            {
+                "EventInfo_mcChannelNumber": "int32",
+                "EventInfo_mcEventWeight": "float32",
+                #"EventInfo_NBHadrons": "int32",   # I doubt saving the parents is necessary here, which is why I didn't include them
+                "fjet_nnscore": "float32",
+                "fjet_pt": "float32",
+                "fjet_eta": "float32",
+                "fjet_phi": "float32",
+                "fjet_m": "float32",
+                "fjet_weight_pt": "float32", 
+                "labels" : "float32",
+                "Good_jets" : "float32",
+                # "ungroomedtruthjet_m" : "float32",
+                # "ungroomedtruthjet_split12" : "float32",
+            })
+
             #Save branches
             f[treename].extend({"EventInfo_mcChannelNumber": dsids,
                                 "EventInfo_mcEventWeight": mcweights_out,
@@ -312,7 +315,7 @@ if __name__ == "__main__":
 
         #nentries = 0
         #Time statistics
-        nentries_done += uproot3.numentries(file, intreename)
+        nentries_done += num_entries
         time_per_entry = (time.time() - t_start)/(nentries_done+1)
         eta = time_per_entry * (nentries_total - nentries_done)
 

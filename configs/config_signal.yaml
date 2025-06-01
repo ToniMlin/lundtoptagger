@@ -1,11 +1,13 @@
-signal: W  # W or top, flag to choose one of the configurations below
+signal: top  # top, W, or W_flat; flag to choose one of the configurations below
 
 top:
-  # weights_file: "/data/jmsardain/LJPTagger/FullSplittings/SplitForTopTagger/flat_weights.root"
-  weights_file: "/data/jmsardain/LJPTagger/FullSplittings/SplitForTopTagger/5_Signal_and_BKG_cutTruth350/flat_weights.root"
-  pt_hist_file_bkg: "/data/bcifuentes/histograms/qcd.root"
-  pt_hist_file_signal: "/data/bcifuentes/histograms/top.root"
+  pt_hist_file_bkg: "./histos/qcdP8.root" # we should put here all MC samples and if we select all MC or Pythia
+  pt_hist_file_signal: "./histos/topBSMP8.root" # FIXME: add a new histogram withe the appropriate mass cut or change the mass cut here
   signal_jet_truth_label: 1
+  dsid: 801661           # for this DSID, keep only jets with truth label 1, and for other samples, keep the QCD jets (with truth label 10)
+  pt_range: [350, 3100]  # jet pT selection in GeV, upper limit not really necessary, in testing jets with pt > 3k are not included
+  mass_range: [0, .inf]  # jet mass selection in GeV, for no upper limit use .inf
+  min_splits: 3          # minimum number of splittings, or emissions, that jets must have
   skip_dsids:
   - 364700  # don't lose time with jets that don't pass pt cut
   - 364701  # don't lose time with jets that don't pass pt cut
@@ -13,11 +15,27 @@ top:
   - 801859  # don't keep W jets
 
 W:
-  weights_file: "/eos/home-t/tmlinare/Lund/Lund_tagging/ljptagger/flat_weights.root"
-  pt_hist_file_bkg: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger/qcd.root"
-  # pt_hist_file_signal: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger/pTs/Wrealmass.root"
-  pt_hist_file_signal: "/eos/home-t/tmlinare/Lund/Lund_tagging/lundtoptagger/pTs/Wwidemass.root"
+  pt_hist_file_bkg: "./histos/qcdP8.root"      # FIXME: add a new histogram withe the appropriate mass cut
+  pt_hist_file_signal: "./histos/WBSMP8.root"  # FIXME: add a new histogram withe the appropriate mass cut
   signal_jet_truth_label: 2
+  dsid: 801859           # for this DSID, keep only jets with truth label 2, and for other samples, keep the QCD jets (with truth label 10)
+  pt_range: [200, 3100]  # jet pT selection in GeV, upper limit not really necessary, in testing jets with pt > 3k are not included
+  mass_range: [40, 300]  # mass selection in GeV, for no upper limit use .inf; upper limit can help with stability in ANN
+  min_splits: 3          # minimum number of splittings, or emissions, that jets must have
+  skip_dsids:
+  - 364700  # don't lose time with jets that don't pass pt cut
+  - 364701  # don't lose time with jets that don't pass pt cut
+  - 364702  # don't lose time with jets that don't pass pt cut
+  - 801661  # don't keep top jets
+
+W_flat:
+  pt_hist_file_bkg: "./histos/qcdP8.root"           # FIXME: add a new histogram withe the appropriate mass cut
+  pt_hist_file_signal: "./histos/WBSMP8_flat.root"  # FIXME: add a new histogram withe the appropriate mass cut
+  signal_jet_truth_label: 2
+  dsid: 802017           # for this DSID, keep only jets with truth label 2, and for other samples, keep the QCD jets (with truth label 10)
+  pt_range: [200, 3100]  # jet pT selection in GeV, upper limit not really necessary, in testing jets with pt > 3k are not included
+  mass_range: [40, 300]  # mass selection in GeV, for no upper limit use .inf
+  min_splits: 3          # minimum number of splittings, or emissions, that jets must have
   skip_dsids:
   - 364700  # don't lose time with jets that don't pass pt cut
   - 364701  # don't lose time with jets that don't pass pt cut
