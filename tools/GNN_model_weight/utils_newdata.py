@@ -16,114 +16,92 @@ from scipy.stats import entropy
 from ..GNN_model_weight.models import mdn_loss, mdn_loss_new
 
 
-def GetPtWeight(truth_labels, dsid_input, pts, SF, Pythia_or_All=False, signal_config_file="configs/config_signal.yaml"):
-    ## PT histograms of all qcd and top jets in dataset
+def GetPtWeight(pts, truth_labels, dsid_input: int, SF: float = 5, signal_config_file: str = "configs/config_signal.yaml") -> np.array:
+    """
+    Return an array of weights for jets that make their pT distribution flat.
+
+    Args:
+        pts (array-like): Jet pT values.
+        truth_labels (array-like): Integer large-R jet truth labels (e.g. 1 for tqqb, 2 for Wqq, 5 for Zqq, 10 for QCD).
+        dsid_input (int): DSID of the input sample. It is assumed that all of the jets are from the same sample (or the same group of QCD samples).
+        SF (float): Scale factor used for correct relative weighting of signal and background. Not important any more since weights are rescaled in training script to balance signal and background.
+        signal_config_file (str): Path to the YAML configuration file for signal settings.
+    Returns:
+        np.array: An array of weights for the jets.
+    """
+    # get signal and backgound pT histograms
     with open(signal_config_file) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     signal = config["signal"]
 
-    filename1 = config[signal]["pt_hist_file_bkg"]
-    filename2 = config[signal]["pt_hist_file_signal"]
-    #weights_file1 = uproot.open(filename1)
-    #flatweights_bg = weights_file1["pt"].to_numpy()
+    filename_sig = config[signal]["pt_hist_file_signal"]
+    filenames_bkg = config[signal]["pt_hist_files_bkg"]["files"]
+    histos_dir = config[signal]["pt_hist_files_bkg"]["dir_path"]
 
-    common_path = "./histos/" 
-    filename_Phythia = common_path+"qcdP8.root" # ./histosqcdP8.root
-    filename_Sherpa_L = common_path+"qcdSL.root"
-    filename_Sherpa_C = common_path+"qcdSC.root"
-    filename_Herwig_d = common_path+"qcdHD.root"
-    #"/data/ravinascos/LundNet/histosR_22_Jean/plotting/ALL_hist/qcdHD.root"#common_path+""
-    if Pythia_or_All:
-        print("dsid",dsid_input)
-        ### this method only works if each root files doesn't contain more than one MC.
-        if dsid_input >= 364700 and dsid_input <= 364712:
-            filename1 = filename_Phythia
-            weights_file1 = uproot.open(filename1)
-            flatweights_bg = weights_file1["pt"].to_numpy()
-            print("Sample: Pythia")
-        elif dsid_input >= 364686 and dsid_input <= 364694 :
-            filename1 = filename_Sherpa_L
-            weights_file1 = uproot.open(filename1)
-            flatweights_bg = weights_file1["pt"].to_numpy()
-            print("Sample: Sherpa_L")
-        elif dsid_input >= 364677 and dsid_input <= 364685 :
-            filename1 = filename_Sherpa_C
-            weights_file1 = uproot.open(filename1)
-            flatweights_bg = weights_file1["pt"].to_numpy()
-            print("Sample: Sherpa_C")
-        elif dsid_input >= 364902 and dsid_input <= 364909 :
-            filename1 = filename_Herwig_d
-            weights_file1 = uproot.open(filename1)
-            flatweights_bg = weights_file1["pt"].to_numpy()
-            print("Sample: Herwig_d")
-        #'''
-        elif dsid_input == 801661:
-            filename1 = filename_Phythia
-            weights_file1 = uproot.open(filename1)
-            flatweights_bg = weights_file1["pt"].to_numpy()
-            print("Sample: Signal top")
-        else:
-            print("WARNING!! You are not using proper Pythia, Sherpa or Herwig sample")
-            weights_file1 = uproot.open(filename1)
-            flatweights_bg = weights_file1["pt"].to_numpy()
-        #'''
-    else:
-        weights_file1 = uproot.open(filename1)
-        flatweights_bg = weights_file1["pt"].to_numpy()
+    filename_Phythia = os.path.join(histos_dir, "qcdP8.root")  # default file for background jets if no match found
+    filename_bkg = filename_Phythia
 
-    weights_file2 = uproot.open(filename2)
-    flatweights_sig = weights_file2["pt"].to_numpy()
-    
-    lenght_sig = len(flatweights_sig[0])
-    lenght_bkg = len(flatweights_bg[0])
+    print("DSID:", dsid_input)
+    # only works if all the data in a single ROOT file is from the same DSID
+    if dsid_input != config[signal]["dsid"]:
+        found_background_file = False
+        for filename, dsid_range in filenames_bkg.items():
+            if dsid_range[0] <= dsid_input <= dsid_range[1]:
+                filename_bkg = os.path.join(histos_dir, filename)
+                found_background_file = True
+                break
+        if not found_background_file:
+            print(f"WARNING: No histogram file found for DSID {dsid_input} for {signal} signal configuration.")
 
-    ## keep reweighting using Pythia
+    print("Using signal file:", filename_sig)
+    print("Using background file:", filename_bkg)
+
+    weights_file_sig = uproot.open(filename_sig)
+    bin_counts_sig, bin_edges_sig = weights_file_sig["pt"].to_numpy()
+    nbins_sig = len(bin_counts_sig)
+
+    weights_file_bkg = uproot.open(filename_bkg)
+    bin_counts_bkg, bin_edges_bkg = weights_file_bkg["pt"].to_numpy()
+    n_bins_bkg = len(bin_counts_bkg)
+
+    # calculate scaling factor between signal and background using Pythia sample histogram
     filename_reweight = filename_Phythia
     weights_file_reweight = uproot.open(filename_reweight)
-    flatweights_bg_reweight = weights_file_reweight["pt"].to_numpy()
-    total_jets_qcd = np.sum(flatweights_bg_reweight[0])
-    total_jets_signal = np.sum(flatweights_sig[0])
+    bin_counts_bkg_reweight, _ = weights_file_reweight["pt"].to_numpy()
+    total_jets_qcd = np.sum(bin_counts_bkg_reweight)
+    total_jets_signal = np.sum(bin_counts_sig)
     print("proportion QCD_pythia/SIGNAL", total_jets_qcd / total_jets_signal)
     #ERRORRR
     QCD_SIGNAL_proportion = total_jets_qcd / total_jets_signal
-    sig_bkg_proportion = 5 #5  ## if is taked 5% of signal and 1% of qcd for training then sig_bkg_proportion=5
-    scale_factor = (lenght_bkg/lenght_sig) / sig_bkg_proportion #1
+    sig_bkg_proportion = SF #5  ## if is taked 5% of signal and 1% of qcd for training then sig_bkg_proportion=5
+    scale_factor = (n_bins_bkg/nbins_sig) / sig_bkg_proportion #1
     scale_factor = scale_factor * QCD_SIGNAL_proportion
-    print(scale_factor)
-    
-    weight_out = []
-    Inv_hist_bg = []#flatweights_bg[0]
-    Inv_hist_sig = []#flatweights_sig[0]
+    print("scale factor:", scale_factor)
 
-    #print(flatweights_bg[0])
-    #print(flatweights_bg[1])
-    #print(flatweights_bg[2])
-    #print("len(flatweights_bg)", len(flatweights_bg))
-    ## it's time to calcuate the 1/hist
-    for i in range (0,lenght_bkg):
-        if flatweights_bg[0][i]==0:
-            Inv_hist_bg.append(0)
-            continue
-        else:
-            Inv_hist_bg.append(np.sum(flatweights_bg[0]) / (lenght_bkg * flatweights_bg[0][i]))
-    for i in range (0,lenght_sig):
-        if flatweights_sig[0][i]==0:
-            Inv_hist_sig.append(0)
-            continue
-        else:
-            Inv_hist_sig.append(np.sum(flatweights_sig[0]) / (lenght_sig * flatweights_sig[0][i]))
+    # calculate the weight for each pT bin as the inverse of the bin count, with some scale factors
+    Inv_hist_bg = np.where(
+        bin_counts_bkg==0, 0,                                   # if bin count is zero, set weight to zero
+        np.sum(bin_counts_bkg) / (n_bins_bkg * bin_counts_bkg)  # otherwise, calculate the inverse weight
+    )
+    Inv_hist_sig = np.where(
+        bin_counts_sig==0, 0,
+        np.sum(bin_counts_sig) / (nbins_sig * bin_counts_sig) * scale_factor
+    )
 
-    for i in trange(len(truth_labels)):
-        pt_bin = int( ((pts[i]-100)/3000)*lenght_sig )
-        if pt_bin>=lenght_sig : # ==
-            pt_bin = lenght_sig-1
-        if truth_labels[i]==10: # background could also be identified by DSIS, which would be < 370000
-            #print("pts[i] ->", pt[i])
-            #print("bin_pt->", pt_bin)
-            weight_out.append( (Inv_hist_bg[pt_bin])*1  )
-        if truth_labels[i]!=10: # this could also contain some non-signal jets which must be removed when creating the training dataset
-            weight_out.append( (Inv_hist_sig[pt_bin]*scale_factor)*1 ) #*10**2 )
-    return np.array(weight_out)
+    # for each jet pT, get the index of the corresponding pT bin
+    pt_bin_indices_sig = np.digitize(pts, bin_edges_sig) - 1          # -1 to get zero-based indices
+    pt_bin_indices_sig = np.clip(pt_bin_indices_sig, 0, nbins_sig-1)  # for bin indices above the last, change them to the index of the last bin
+    pt_bin_indices_bkg = np.digitize(pts, bin_edges_bkg) - 1
+    pt_bin_indices_bkg = np.clip(pt_bin_indices_bkg, 0, n_bins_bkg-1)
+
+    # assign weight based on which pT bin the jet pT falls into and whether it is signal or background
+    weights_out = np.where(
+        truth_labels == 10,
+        Inv_hist_bg[pt_bin_indices_bkg],
+        Inv_hist_sig[pt_bin_indices_sig] # jets with label other than 10 are reweighted by the signal pT histogram, some of these are actually not signal and are removed later
+    )
+
+    return weights_out
 
 
 def load_yaml(file_name):

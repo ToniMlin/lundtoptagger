@@ -78,7 +78,7 @@ def main():
             # N_tracks = ak.flatten(tree["LRJ_Nconst"].array(library="ak"))
 
             print("\nCalculating weights:")
-            flat_weights = GetPtWeight(truth_labels, dsid_test, jet_pts, 5, Pythia_or_All=True)
+            flat_weights = GetPtWeight(jet_pts, truth_labels, dsid_test, 5)
             kT_selection = config["kT_cut"]
 
             passed_selection = []   # will be a boolean array, True if jet passes selection

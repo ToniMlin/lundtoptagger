@@ -1,8 +1,18 @@
 signal: top  # top, W, or W_flat; flag to choose one of the configurations below
 
+bkg_histos:
+  dir_path: &bkg_histos_dir "./histos/mass_40-300_pt_200-3100"
+  files: &bkg_histos_files            # minimum and maximum DSID each histogram file corresponds to
+    qcdP8.root: [364700, 364712]
+    qcdSL.root: [364686, 364694]
+    qcdSC.root: [364677, 364685]
+    qcdHD.root: [364902, 364909]
+
 top:
-  pt_hist_file_bkg: "./histos/qcdP8.root" # we should put here all MC samples and if we select all MC or Pythia
-  pt_hist_file_signal: "./histos/topBSMP8.root" # FIXME: add a new histogram withe the appropriate mass cut or change the mass cut here
+  pt_hist_files_bkg:                            # TODO: make sure to use histograms with matching mass cut
+    dir_path: ./histos/
+    files: *bkg_histos_files
+  pt_hist_file_signal: "./histos/topBSMP8.root" # TODO: make sure to use histograms with matching mass cutor change the mass cut here
   signal_jet_truth_label: 1
   dsid: 801661           # for this DSID, keep only jets with truth label 1, and for other samples, keep the QCD jets (with truth label 10)
   pt_range: [350, 3100]  # jet pT selection in GeV, upper limit not really necessary, in testing jets with pt > 3k are not included
@@ -15,8 +25,10 @@ top:
   - 801859  # don't keep W jets
 
 W:
-  pt_hist_file_bkg: "./histos/qcdP8.root"      # FIXME: add a new histogram withe the appropriate mass cut
-  pt_hist_file_signal: "./histos/WBSMP8.root"  # FIXME: add a new histogram withe the appropriate mass cut
+  pt_hist_files_bkg:
+    dir_path: *bkg_histos_dir
+    files: *bkg_histos_files
+  pt_hist_file_signal: "./histos/mass_40-300_pt_200-3100/WBSMP8.root"
   signal_jet_truth_label: 2
   dsid: 801859           # for this DSID, keep only jets with truth label 2, and for other samples, keep the QCD jets (with truth label 10)
   pt_range: [200, 3100]  # jet pT selection in GeV, upper limit not really necessary, in testing jets with pt > 3k are not included
@@ -29,10 +41,30 @@ W:
   - 801661  # don't keep top jets
 
 W_flat:
-  pt_hist_file_bkg: "./histos/qcdP8.root"           # FIXME: add a new histogram withe the appropriate mass cut
-  pt_hist_file_signal: "./histos/WBSMP8_flat.root"  # FIXME: add a new histogram withe the appropriate mass cut
+  pt_hist_files_bkg:
+    dir_path: *bkg_histos_dir
+    files: *bkg_histos_files
+  pt_hist_file_signal: "./histos/mass_40-300_pt_200-3100/WBSMP8_flat.root"
   signal_jet_truth_label: 2
   dsid: 802017           # for this DSID, keep only jets with truth label 2, and for other samples, keep the QCD jets (with truth label 10)
+  pt_range: [200, 3100]  # jet pT selection in GeV, upper limit not really necessary, in testing jets with pt > 3k are not included
+  mass_range: [40, 300]  # mass selection in GeV, for no upper limit use .inf
+  min_splits: 3          # minimum number of splittings, or emissions, that jets must have
+  skip_dsids:
+  - 364700  # don't lose time with jets that don't pass pt cut
+  - 364701  # don't lose time with jets that don't pass pt cut
+  - 364702  # don't lose time with jets that don't pass pt cut
+  - 801661  # don't keep top jets
+
+Wqq_SM:
+  pt_hist_files_bkg:
+    dir_path: *bkg_histos_dir
+    files: *bkg_histos_files
+  # TODO: no flat-pT histos for this sample because it won't be used for flat-pT, modify code so it doesn't require flat-pT histos
+  # and to just reuse the configuration for the flat-pT W sample
+  pt_hist_file_signal: "./histos/mass_40-300_pt_200-3100/WBSMP8.root"
+  signal_jet_truth_label: 2
+  dsid: 700843           # for this DSID, keep only jets with truth label 2, and for other samples, keep the QCD jets (with truth label 10)
   pt_range: [200, 3100]  # jet pT selection in GeV, upper limit not really necessary, in testing jets with pt > 3k are not included
   mass_range: [40, 300]  # mass selection in GeV, for no upper limit use .inf
   min_splits: 3          # minimum number of splittings, or emissions, that jets must have

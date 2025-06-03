@@ -22,8 +22,7 @@ def flatten_small_branch(ref, vec): ## ref and vec same len()
             vec_out.append(vec[i])
     return np.array(vec_out)
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(description='Train with configurations')
     add_arg = parser.add_argument
     add_arg('config', help="job configuration")
@@ -153,7 +152,7 @@ if __name__ == "__main__":
 
             #flat_weights = GetPtWeight_2( labels, jet_pts, filename=config['data']['weights_file'], SF=config['data']['scale_factor'])
 
-            flat_weights = GetPtWeight(truth_labels, dsid_test, jet_pts, 5, Pythia_or_All=True)
+            flat_weights = GetPtWeight(jet_pts, truth_labels, dsid_test, 5)
             #dataset = create_train_dataset_fulld_new_Ntrk_pt_weight_file( dataset , all_lund_zs, all_lund_kts, all_lund_drs, parent1, parent2, flat_weights, labels ,N_tracks,jet_pts, jet_ms  )
             
 
@@ -324,8 +323,6 @@ if __name__ == "__main__":
 
     print("Total evaluation time: {:.4f} seconds.".format(time.time()-t_filestart))
 
-'''
-    return
+
 if __name__ == "__main__":
     main()
-'''

@@ -1,4 +1,5 @@
 import argparse
+import os
 import glob
 import time
 from datetime import timedelta
@@ -6,7 +7,6 @@ from datetime import timedelta
 import uproot
 import awkward as ak
 from ROOT import TH1F, TFile
-import os
 
 from tools.GNN_model_weight.utils_newdata import load_yaml
 
@@ -14,10 +14,18 @@ print("Libraries loaded!")
 
 # parameters
 config_signal_path = "configs/config_signal.yaml"
-infiles_path = "/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-06-1052-fee0 files 1-50/data-ANALYSIS/mc20_13TeV.802017.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT_wideWmass.deriv.DAOD_JETM2.e8482_s3797_r13145_p5548.root"
+# infiles_path = "/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-06-1052-fee0 files 1-50/data-ANALYSIS/mc20_13TeV.802017.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT_wideWmass.deriv.DAOD_JETM2.e8482_s3797_r13145_p5548.root"
 # infiles_path = "/eos/home-t/tmlinare/Lund/jetetmiss/JETMDataMC/jpierre/run/submitDir-2025-01-12-1919-bc4c W files 1-50 (not flat mass)/data-ANALYSIS/mc20_13TeV.801859.Py8EG_A14NNPDF23LO_WprimeWZ_flatpT.deriv.DAOD_JETM2.e8482_s3681_r13145_p5548.root"
-outfile_path = "histos/mass_40-300/WBSMP8.root"
+infiles_path = "/eos/user/r/ravinasc/R_22_Samples/JETM2_mc20/Pythia_train/Pythia_qcd_01/*.root"
+# infiles_path = "/eos/user/r/ravinasc/R_22_Samples/JETM2_mc20/Alternative_MC/Sherpa_Lund/*.root"
+# infiles_path = "/eos/user/r/ravinasc/R_22_Samples/JETM2_mc20/Alternative_MC/Sherpa_Cluster/*.root"
+# infiles_path = "/eos/user/r/ravinasc/R_22_Samples/JETM2_mc20/Alternative_MC/Herwing_dipole/*.root"
 # outfile_path = "histos/mass_40-300/WBSMP8_flat.root"
+# outfile_path = "histos/mass_40-300/WBSMP8.root"
+outfile_path = "histos/mass_40-300_pt_200-3100/qcdP8.root"
+# outfile_path = "histos/mass_40-300_pt_200-3100/qcdSL.root"
+# outfile_path = "histos/mass_40-300_pt_200-3100/qcdSC.root"
+# outfile_path = "histos/mass_40-300_pt_200-3100/qcdHD.root"
 nbins = 100
 
 
@@ -76,7 +84,7 @@ def main():
         for label in truth_labels:
             hist_truth_label.Fill(label)
 
-    # Save histogram to a ROOT file
+    # Save histograms to a ROOT file
     os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
     output_file = TFile(outfile_path, "RECREATE")
     hist_pt.Write()

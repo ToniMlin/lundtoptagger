@@ -31,7 +31,7 @@ conda activate rootenv
 
 To create graphs for training from ROOT files and save them to a file, first process JETM2 or FTAG1 derivations with the following code:  
 <https://gitlab.cern.ch/rvinasco/jetmdatamc/-/tree/temporaryRun2>  
-Then run `Make_data.py` on the output to create :
+Then run `Make_data.py` on the output:
 
 ```bash
 python Make_data.py configs/config_make_data.yaml
@@ -64,9 +64,9 @@ The parameters include values for the selection cuts (mass, $p_T$, minimum numbe
 and paths to files with histograms of the $p_T$ distributions of the jets, which are used to calculate the $p_T$ weights
 so that they are proportional to 1/(bin count).
 These histograms are included in the repository; they are located in the `histos` folder.
-They can be created with the `make_histos.py` script, which also applies cuts from `config_signal.yaml`.
+They can be created with the `make_histos.py` script, which also applies mass and $pT$ cuts from `config_signal.yaml`.
 
-## Training and testing
+## Training
 
 For the training, the main changes one should do are in the configuration file: `config_ONLY_TRAIN.yaml`.
 In this file you will define the learning rate, batch size, the input files, the model to use, the location to save your checkpoints.
@@ -89,6 +89,7 @@ For example:
 python weight_ONLY_TRAINS.py configs/config_ONLY_TRAIN.yaml --ln_kT_cut 0 --do_combined_training true
 ```
 
+## Testing
 
 For the testing, you should run the final_makescores notebook. The only changes you should do are under the conditions in the for loop. The different variables should point to your test files, the ckpt you want to use and the repo to save your output root files 
 
